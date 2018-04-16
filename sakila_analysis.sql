@@ -52,7 +52,7 @@ update sakila.actor
 set first_name = "HARPO"
 where first_name = "GROUCHO" and last_name = "WILLIAMS";
 
-select * from actor; -- fheck column
+select * from actor; -- check column
 
 -- 4d. Perhaps we were too hasty in changing GROUCHO to HARPO. It turns out that GROUCHO was the correct name after all! In a single query, 
 --     if the first name of the actor is currently HARPO, change it to GROUCHO. Otherwise, change the first name to MUCHO GROUCHO, as that is exactly what the actor will be with the grievous error. BE CAREFUL NOT TO CHANGE THE FIRST NAME OF EVERY ACTOR TO MUCHO GROUCHO, HOWEVER! (Hint: update the record using a unique identifier.)
@@ -77,7 +77,8 @@ select * from staff;
 select * from address;
 
 select staff.first_name, staff.last_name, address.address from staff 
-join address on staff.address_id = address.address_id;
+join address 
+	on staff.address_id = address.address_id;
 
 -- 6b. Use JOIN to display the total amount rung up by each staff member in August of 2005. Use tables staff and payment.
 select * from payment;
@@ -88,21 +89,23 @@ join
 	from payment
 	where year(payment.payment_date) = "2005" and month(payment.payment_date) = "8"
 	group by staff_id) as p
-on staff.staff_id =  p.staff_id;
+	on staff.staff_id =  p.staff_id;
 
 -- 6c. List each film and the number of actors who are listed for that film. Use tables film_actor and film. Use inner join.
 select * from film_actor;
 select * from film;
 
 select fa.film_id, f.title, count(fa.actor_id) as number_of_actors from film f
-inner join film_actor fa on f.film_id = fa.film_id
+inner join film_actor fa 
+	on f.film_id = fa.film_id
 group by film_id, f.title;
 
 -- 6d. How many copies of the film Hunchback Impossible exist in the inventory system?
 select * from inventory;
 
 select f.film_id, f.title, count(i.film_id) as inventory from film f 
-inner join inventory i on f.film_id = i.film_id
+inner join inventory i 
+	on f.film_id = i.film_id
 where f.title = "Hunchback Impossible";
 
 -- 6e. Using the tables payment and customer and the JOIN command, list the total paid by each customer. List the customers alphabetically by last name:
@@ -110,7 +113,8 @@ select * from payment;
 select * from customer;
 
 select c.first_name, c.last_name, sum(p.amount) as total_paid from customer c
-join payment p on c.customer_id = p.customer_id
+join payment p 
+	on c.customer_id = p.customer_id
 group by c.customer_id
 order by last_name asc;
 
@@ -122,7 +126,8 @@ select * from language;
 select f.title from film f
 where f.title in 
 	(select f.title from film f
-	join language l on l.language_id = f.language_id
+	join language l 
+		on l.language_id = f.language_id
 	where f.title like "K%" or f.title like "Q%"
 		and l.name = "English");
 
@@ -148,9 +153,12 @@ select * from city;
 select * from country;
 
 select cu.first_name, cu.last_name, cu.email from customer cu
-join address a on cu.address_id = a.address_id 		-- join on address id
-join city ci on a.city_id = ci.city_id		   		-- join on city id
-join country co on ci.country_id = co.country_id	-- join on country id
+join address a 
+	on cu.address_id = a.address_id 		-- join on address id
+join city ci 
+	on a.city_id = ci.city_id		   		-- join on city id
+join country co 
+	on ci.country_id = co.country_id		-- join on country id
 where co.country = "Canada";
 
 -- 7d. Sales have been lagging among young families, and you wish to target all family movies for a promotion. Identify all movies categorized as family films.
@@ -159,8 +167,10 @@ select * from film_category;
 select * from category;
 
 select f.title from film f
-join film_category fc on f.film_id = fc.film_id		-- join on film id
-join category c on fc.category_id = c.category_id 	-- join on category id
+join film_category fc 
+	on f.film_id = fc.film_id			-- join on film id
+join category c 
+	on fc.category_id = c.category_id 	-- join on category id
 where c.name = "Family"								
 order by f.title asc;
 
@@ -170,8 +180,10 @@ select * from inventory;
 select * from rental;	 
 
 select f.title, count(r.rental_id) as number_of_rentals from film f
-join inventory i on f.film_id = i.film_id			-- join on film id
-join rental r on i.inventory_id = r.inventory_id	-- join on inventory id
+join inventory i 
+	on f.film_id = i.film_id			-- join on film id
+join rental r 
+	on i.inventory_id = r.inventory_id	-- join on inventory id
 group by f.title
 order by number_of_rentals desc;
 
@@ -194,9 +206,12 @@ select * from city;
 select * from country;
 
 select s.store_id, ci.city, co.country from store s
-inner join address a on s.address_id = a.address_id
-inner join city ci on a.city_id = ci.city_id
-inner join country co on ci.country_id = co.country_id;
+inner join address a 
+	on s.address_id = a.address_id
+inner join city ci 
+	on a.city_id = ci.city_id
+inner join country co 
+	on ci.country_id = co.country_id;
 
 -- 7h. List the top five genres in gross revenue in descending order. (Hint: you may need to use the following tables: category, film_category, inventory, payment, and rental.)
 select * from category;
@@ -206,9 +221,12 @@ select * from payment;
 select * from rental;
 
 select c.name as 'Genres', sum(p.total_amount) as 'Gross_Revenue' from rental r
-inner join inventory i on r.inventory_id = i.inventory_id
-inner join film_category fc on i.film_id = fc.film_id
-inner join category c on fc.category_id = c.category_id
+inner join inventory i 
+	on r.inventory_id = i.inventory_id
+inner join film_category fc 
+	on i.film_id = fc.film_id
+inner join category c
+	on fc.category_id = c.category_id
 left join (
 	select p.rental_id, sum(p.amount) as total_amount from payment p	-- total amount for each rental id
 	group by p.rental_id
@@ -222,9 +240,12 @@ drop view if exists top_five_genres_by_gross_revenue;
 
 create view top_five_genres_by_gross_revenue as 
 select c.name as 'Genres', sum(p.total_amount) as 'Gross_Revenue' from rental r
-inner join inventory i on r.inventory_id = i.inventory_id
-inner join film_category fc on i.film_id = fc.film_id
-inner join category c on fc.category_id = c.category_id
+inner join inventory i 
+	on r.inventory_id = i.inventory_id
+inner join film_category fc 
+	on i.film_id = fc.film_id
+inner join category c 
+	on fc.category_id = c.category_id
 left join (
 	select p.rental_id, sum(p.amount) as total_amount from payment p	-- total amount for each rental id
 	group by p.rental_id
